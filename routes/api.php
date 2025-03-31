@@ -4,6 +4,7 @@ use App\Http\Controllers\CidadeController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\PessoaController;
+use App\Http\Controllers\ServidorEfetivoController;
 use App\Http\Controllers\UnidadeController;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
@@ -49,6 +50,14 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/cidades', [CidadeController::class, 'store']);
     Route::put('/cidades/{id}', [CidadeController::class, 'update']);
     Route::delete('/cidades/{id}', [CidadeController::class, 'destroy']);
+});
+
+Route::middleware('auth:sanctum')->group(function () {
+    Route::get('/servidor-efetivos', [ServidorEfetivoController::class, 'index']);
+    Route::get('/servidor-efetivos/{id}', [ServidorEfetivoController::class, 'show']);
+    Route::post('/servidor-efetivos', [ServidorEfetivoController::class, 'store']);
+    Route::put('/servidor-efetivos/{id}', [ServidorEfetivoController::class, 'update']);
+    Route::delete('/servidor-efetivos/{id}', [ServidorEfetivoController::class, 'destroy']);
 });
 
 Route::middleware(['auth:sanctum'])->get('/user', function (Request $request) {
