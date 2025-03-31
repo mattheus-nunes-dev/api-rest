@@ -163,4 +163,41 @@ class ServidorEfetivoController extends Controller
         $servidorEfetivo->delete();
         return response()->json(['message' => 'Servidor Efetivo deletada com sucesso!'], 200);
     }
+
+    public function getServidorEfetivoLotUni($unidId)
+    {
+        try {
+            $servidorEfetivos = ServidorEfetivo::select([
+                                        'pessoa.pes_nome as nome',
+                                        'pessoa.pes_data_nascimento as pes_data_nascimento',
+                                        'unidade.unid_nome as unidade_lotacao'
+                                ])
+                                ->join('pessoa', 'pessoa.pes_id', '=', 'servidor_efetivo.pes_id')
+                                ->join('lotacao', 'lotacao.pes_id', '=', 'servidor_efetivo.pes_id')
+                                ->join('unidade', 'unidade.unid_id', '=', 'lotacao.unid_id')
+                                ->where('lotacao.unid_id', $unidId)
+                                ->get();
+            if($servidorEfetivos->isEmpty()) {
+                return response()->json(['error' => 'Nenhum servidor efetivo encontrado para esta unidade.'], 404);
+            }else{
+                $data = [];
+                foreach ($servidorEfetivos as $servidor) {
+                    $data[] = [
+                        'Nome' => $servidor->nome,
+                        'idade' => \Carbon\Carbon::parse($servidor->pes_data_nascimento)->age ?? '',
+                        'unidade_lotacao' => $servidor->unidade_lotacao,
+                        'fotografia' => '',
+                    ];
+                }
+            }
+
+            return response()->json([
+                'error' => '',
+                'data' => $data ?? ''
+            ], 200);
+
+        } catch (\Exception $ex) {
+            return response()->json(['error' => $ex->getMessage() ], 401);
+        }
+    }
 }

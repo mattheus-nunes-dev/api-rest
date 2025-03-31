@@ -59,6 +59,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/servidor-efetivos', [ServidorEfetivoController::class, 'store']);
     Route::put('/servidor-efetivos/{id}', [ServidorEfetivoController::class, 'update']);
     Route::delete('/servidor-efetivos/{id}', [ServidorEfetivoController::class, 'destroy']);
+    Route::get('/servidor-efetivos-unidade/{id}', [ServidorEfetivoController::class, 'getServidorEfetivoLotUni']);
 });
 
 Route::middleware('auth:sanctum')->group(function () {
