@@ -200,4 +200,40 @@ class ServidorEfetivoController extends Controller
             return response()->json(['error' => $ex->getMessage() ], 401);
         }
     }
+
+    public function getServidorEfetivoPorNome($nome)
+    {
+        try {
+            $servidorEfetivos = ServidorEfetivo::select([
+                                        'pessoa.pes_nome as nome',
+                                        'pessoa.pes_data_nascimento as pes_data_nascimento',
+                                        'unidade.unid_nome as unidade_lotacao',
+                                        'endereco.end_tipo_logradouro as tipo_logradouro',
+                                        'endereco.end_logradouro as logradouro',
+                                        'endereco.end_numero as numero',
+                                        'endereco.end_bairro as bairro',
+                                        'cidade.cid_nome as cid_nome',
+                                        'cidade.cid_uf as cid_uf',
+                                ])
+                                ->join('pessoa', 'pessoa.pes_id', '=', 'servidor_efetivo.pes_id')
+                                ->join('lotacao', 'lotacao.pes_id', '=', 'pessoa.pes_id')
+                                ->join('unidade', 'unidade.unid_id', '=', 'lotacao.unid_id')
+                                ->join('unidade_endereco', 'unidade_endereco.unid_id', '=', 'unidade.unid_id')
+                                ->join('endereco', 'endereco.end_id', '=', 'unidade_endereco.end_id')
+                                ->join('cidade', 'cidade.cid_id', '=', 'endereco.cid_id')
+                                ->where('pessoa.pes_nome', 'ilike', "%{$nome}%")
+                                ->get();
+            if($servidorEfetivos->isEmpty()) {
+                return response()->json(['error' => 'Nenhum servidor efetivo encontrado.'], 404);
+            }
+
+            return response()->json([
+                'error' => '',
+                'data' => $servidorEfetivos ?? ''
+            ], 200);
+
+        } catch (\Exception $ex) {
+            return response()->json(['error' => $ex->getMessage() ], 401);
+        }
+    }
 }
