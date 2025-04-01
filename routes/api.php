@@ -10,6 +10,7 @@ use App\Http\Controllers\UnidadeController;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
+use Laravel\Sanctum\PersonalAccessToken;
 
 Route::post('/login', function (Request $request) {
     $request->validate([
@@ -26,6 +27,27 @@ Route::post('/login', function (Request $request) {
     }
 
     return $user->createToken('api-token')->plainTextToken;
+});
+
+Route::post('/renovar-token', function (Request $request) {
+    $request->validate([
+        'token' => 'required|string',
+    ]);
+    $token = PersonalAccessToken::findToken($request->token);
+
+    if (!$token || !$token->tokenable) {
+        return response()->json(['error' => 'Token inválido'], 401);
+    }
+
+    $token->update([
+        'expires_at' => now()->addMinutes(5)
+    ]);
+
+    return response()->json([
+        'mensagem' => 'Token renovado com sucesso',
+        'token' => $request->token,
+        'expira_em' => $token->expires_at
+    ]);
 });
 
 // Route::apiResource('pessoas', PessoaController::class);
