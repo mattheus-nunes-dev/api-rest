@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\CidadeController;
+use App\Http\Controllers\FileUploadController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\PessoaController;
@@ -92,6 +93,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::put('/servidor-temporarios/{id}', [ServidorTemporarioController::class, 'update']);
     Route::delete('/servidor-temporarios/{id}', [ServidorTemporarioController::class, 'destroy']);
 });
+
+Route::post('/upload', [FileUploadController::class, 'upload'])->middleware('auth:sanctum');
+Route::post('/upload-fotos', [FileUploadController::class, 'uploadFotos'])->middleware('auth:sanctum');
 
 Route::middleware(['auth:sanctum'])->get('/user', function (Request $request) {
     return $request->user();
