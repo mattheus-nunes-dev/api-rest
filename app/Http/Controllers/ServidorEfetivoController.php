@@ -167,7 +167,7 @@ class ServidorEfetivoController extends Controller
     public function getServidorEfetivoLotUni($unidId)
     {
         try {
-            $servidorEfetivos = ServidorEfetivo::select([
+            $query = ServidorEfetivo::select([
                                         'pessoa.pes_nome as nome',
                                         'pessoa.pes_data_nascimento as pes_data_nascimento',
                                         'unidade.unid_nome as unidade_lotacao'
@@ -175,25 +175,34 @@ class ServidorEfetivoController extends Controller
                                 ->join('pessoa', 'pessoa.pes_id', '=', 'servidor_efetivo.pes_id')
                                 ->join('lotacao', 'lotacao.pes_id', '=', 'servidor_efetivo.pes_id')
                                 ->join('unidade', 'unidade.unid_id', '=', 'lotacao.unid_id')
-                                ->where('lotacao.unid_id', $unidId)
-                                ->get();
-            if($servidorEfetivos->isEmpty()) {
+                                ->where('lotacao.unid_id', $unidId);
+
+            $paginatedResults = $query->paginate(10);
+
+            if($paginatedResults->isEmpty()) {
                 return response()->json(['error' => 'Nenhum servidor efetivo encontrado para esta unidade.'], 404);
             }else{
-                $data = [];
-                foreach ($servidorEfetivos as $servidor) {
-                    $data[] = [
+                $data = $paginatedResults->map(function ($servidor) {
+                    return [
                         'Nome' => $servidor->nome,
                         'idade' => \Carbon\Carbon::parse($servidor->pes_data_nascimento)->age ?? '',
                         'unidade_lotacao' => $servidor->unidade_lotacao,
                         'fotografia' => '',
                     ];
-                }
+                });
             }
 
             return response()->json([
                 'error' => '',
-                'data' => $data ?? ''
+                'data' => $data ?? '',
+                'pagination' => [
+                    'current_page' => $paginatedResults->currentPage(),
+                    'per_page' => $paginatedResults->perPage(),
+                    'total' => $paginatedResults->total(),
+                    'last_page' => $paginatedResults->lastPage(),
+                    'from' => $paginatedResults->firstItem(),
+                    'to' => $paginatedResults->lastItem()
+                ]
             ], 200);
 
         } catch (\Exception $ex) {
@@ -222,7 +231,8 @@ class ServidorEfetivoController extends Controller
                                 ->join('endereco', 'endereco.end_id', '=', 'unidade_endereco.end_id')
                                 ->join('cidade', 'cidade.cid_id', '=', 'endereco.cid_id')
                                 ->where('pessoa.pes_nome', 'ilike', "%{$nome}%")
-                                ->get();
+                                ->paginate(10);
+
             if($servidorEfetivos->isEmpty()) {
                 return response()->json(['error' => 'Nenhum servidor efetivo encontrado.'], 404);
             }
