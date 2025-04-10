@@ -1,10 +1,10 @@
 ## 🚀 Informações do processo seletivo
-Processo Seletivo:
-    PSS 02/2025/SEPLAG (Analista de TI - Perfil Junior, Pleno e Sênior)
-Inscrição:
-    10003
-Nome:
-    MATTHEUS NUNES ARAÚJO
+```
+Processo Seletivo: PSS 02/2025/SEPLAG (Analista de TI - Perfil Junior, Pleno e Sênior);
+Inscrição: 10003;
+Nome: MATTHEUS NUNES ARAÚJO.
+
+```
 
 ## 📋 Pré-requisitos
 
